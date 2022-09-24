@@ -9,10 +9,10 @@
 #include "addons/TokenHelper.h"
 #include "addons/RTDBHelper.h"
 
-#define API_KEY "AIzaSyB45NVruZrpGHPmAb6-jcZ7S10SwKYybDY"
+#define API_KEY "AIzaSyB45NVruZrpGHPmAb6-jcZ7S10SwKYybDY"           //firebase information
 #define DATABASE_URL "the-proliec-default-rtdb.firebaseio.com/" 
 
-#define Ledpin 14
+#define Ledpin 14       // define output pin
 
 WiFiServer server(80);
 
@@ -24,17 +24,16 @@ unsigned long sendDataPrevMillis = 0;
 int S1;
 bool signupOK = false;
 
-void setup() {
+void setup() {  
+  pinMode( Ledpin, OUTPUT );
   Serial.begin(115200);
+  //connect to wifi
   WiFiManager wifiManager;
   wifiManager.autoConnect("AutoConnectAP");
   Serial.println("Connected.");  
   server.begin();
-
-pinMode( Ledpin, OUTPUT );
-
-Serial.begin(115200);
-
+ 
+//connect to firebase
 config.api_key = API_KEY;
 config.database_url = DATABASE_URL;
 
@@ -53,15 +52,15 @@ void loop(){
 if (Firebase.ready() && signupOK && (millis() - sendDataPrevMillis > 100 || sendDataPrevMillis == 0))   {
    sendDataPrevMillis = millis();  
 
-if (Firebase.RTDB.getString(&fbdo, "S1")) 
+if (Firebase.RTDB.getString(&fbdo, "S1"))      //read from firebase
     {
       if (fbdo.dataType() == "string") 
       {
-        S1 = fbdo.stringData().toInt();
+        S1 = fbdo.stringData().toInt();    //convert string data to int data
        Serial.println(S1);        
       }
     }     
     
-    digitalWrite( Ledpin , S1 );  
+    digitalWrite( Ledpin , S1 );  //set output 
 }
 }
